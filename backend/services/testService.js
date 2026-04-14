@@ -50,12 +50,14 @@ export default function () {
           metrics["http_req_duration"] ||
           metrics["http_req_duration{expected_response:true}"];
 
-        const avgResponseTime = httpDuration?.avg || 0;
-        const maxResponseTime = httpDuration?.max || 0;
+        const values = httpDuration?.values || {};
+
+        const avgResponseTime = values.avg || 0;
+        const maxResponseTime = values.max || 0;
+        const p95ResponseTime = values["p(95)"] || 0; // ✅ NEW
 
         const failureRate = metrics["http_req_failed"]?.rate || 0;
 
-        // 🔥 ADD THIS
         const healthStatus = getHealthStatus({
           avgResponseTime,
           failureRate
@@ -64,6 +66,7 @@ export default function () {
         resolve({
           avgResponseTime,
           maxResponseTime,
+          p95ResponseTime, // ✅ NEW
           failureRate,
           healthStatus
         });

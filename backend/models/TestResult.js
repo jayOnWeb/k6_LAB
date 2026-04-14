@@ -29,6 +29,10 @@ const testResultSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    p95ResponseTime: {   // ✅ NEW
+      type: Number,
+      required: true,
+    },
     failureRate: {
       type: Number,
       required: true,
@@ -39,7 +43,7 @@ const testResultSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // ✅ createdAt, updatedAt auto
+    timestamps: true,
   }
 );
 
