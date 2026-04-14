@@ -8,6 +8,8 @@ const RunTest = () => {
     vus: 1,
     duration: "10s",
   });
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -18,12 +20,15 @@ const RunTest = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
-      const result = await runTest(formData);
-      console.log("Test Result:", result);
+      const res = await runTest(formData);
+      setResult(res.data); // 👈 important
     } catch (error) {
       console.error("Error running test:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,11 +78,53 @@ const RunTest = () => {
 
         <button
           type="submit"
+          disabled={loading}
           className="w-full bg-black text-white p-2 rounded"
         >
-          Run Test
+          {loading ? "Running Test..." : "Run Test"}
         </button>
       </form>
+      {result && (
+        <div className="mt-6 grid grid-cols-2 gap-4">
+          {/* Card */}
+          <div className="p-4 bg-white shadow rounded">
+            <p className="text-gray-500">Avg Response</p>
+            <h3 className="text-xl font-bold">
+              {result.avgResponseTime.toFixed(2)} ms
+            </h3>
+          </div>
+
+          <div className="p-4 bg-white shadow rounded">
+            <p className="text-gray-500">Max Response</p>
+            <h3 className="text-xl font-bold">{result.maxResponseTime} ms</h3>
+          </div>
+
+          <div className="p-4 bg-white shadow rounded">
+            <p className="text-gray-500">Failure Rate</p>
+            <h3 className="text-xl font-bold">{result.failureRate}</h3>
+          </div>
+
+          <div className="p-4 bg-white shadow rounded">
+            <p className="text-gray-500">Health</p>
+            <h3 className="text-xl font-bold">{result.healthStatus}</h3>
+          </div>
+
+          <div className="col-span-2 p-4 bg-gray-100 rounded">
+            <p>
+              <strong>URL:</strong> {result.url}
+            </p>
+            <p>
+              <strong>Method:</strong> {result.method}
+            </p>
+            <p>
+              <strong>VUs:</strong> {result.vus}
+            </p>
+            <p>
+              <strong>Duration:</strong> {result.duration}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
