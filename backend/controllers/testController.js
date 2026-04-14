@@ -46,8 +46,25 @@ const runTest = async (req, res) => {
     const {
       avgResponseTime,
       maxResponseTime,
-      p95ResponseTime, // ✅ NEW
+      minResponseTime,
+      p90ResponseTime,
+      p95ResponseTime,
+
+      totalRequests,
+      successRequests,
+      failedRequests,
       failureRate,
+
+      dataReceived,
+      dataSent,
+
+      waitingTime,
+      sendingTime,
+      receivingTime,
+      blockedTime,
+      connectingTime,
+      tlsTime,
+
       healthStatus,
     } = result;
 
@@ -57,10 +74,28 @@ const runTest = async (req, res) => {
       method,
       vus,
       duration,
+
       avgResponseTime,
       maxResponseTime,
-      p95ResponseTime, // ✅ NEW
+      minResponseTime,
+      p90ResponseTime,
+      p95ResponseTime,
+
+      totalRequests,
+      successRequests,
+      failedRequests,
       failureRate,
+
+      dataReceived,
+      dataSent,
+
+      waitingTime,
+      sendingTime,
+      receivingTime,
+      blockedTime,
+      connectingTime,
+      tlsTime,
+
       healthStatus,
     });
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { runTest } from "../services/testService";
+import Card from "../components/Card";
 
 const RunTest = () => {
   const [formData, setFormData] = useState({
@@ -85,43 +86,57 @@ const RunTest = () => {
         </button>
       </form>
       {result && (
-        <div className="mt-6 grid grid-cols-2 gap-4">
-          {/* Card */}
-          <div className="p-4 bg-white shadow rounded">
-            <p className="text-gray-500">Avg Response</p>
-            <h3 className="text-xl font-bold">
-              {result.avgResponseTime.toFixed(2)} ms
-            </h3>
+        <div className="mt-8 space-y-6">
+          {/* 🔥 HEALTH STATUS */}
+          <div className="p-4 rounded bg-black text-white">
+            <h2 className="text-xl font-bold">
+              Health Status: {result.healthStatus}
+            </h2>
           </div>
 
-          <div className="p-4 bg-white shadow rounded">
-            <p className="text-gray-500">Max Response</p>
-            <h3 className="text-xl font-bold">{result.maxResponseTime} ms</h3>
+          {/* 🔥 CORE METRICS */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <Card
+              title="Avg Response"
+              value={`${result.avgResponseTime.toFixed(2)} ms`}
+            />
+            <Card
+              title="P95 Response"
+              value={`${result.p95ResponseTime.toFixed(2)} ms`}
+            />
+            <Card title="Max Response" value={`${result.maxResponseTime} ms`} />
+            <Card title="Min Response" value={`${result.minResponseTime} ms`} />
+            <Card title="P90 Response" value={`${result.p90ResponseTime} ms`} />
+            <Card title="Failure Rate" value={`${result.failureRate}%`} />
           </div>
 
-          <div className="p-4 bg-white shadow rounded">
-            <p className="text-gray-500">Failure Rate</p>
-            <h3 className="text-xl font-bold">{result.failureRate}</h3>
+          {/* 🔥 REQUEST STATS */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <Card title="Total Requests" value={result.totalRequests} />
+            <Card title="Success" value={result.successRequests} />
+            <Card title="Failed" value={result.failedRequests} />
           </div>
 
-          <div className="p-4 bg-white shadow rounded">
-            <p className="text-gray-500">Health</p>
-            <h3 className="text-xl font-bold">{result.healthStatus}</h3>
+          {/* 🔥 DATA TRANSFER */}
+          <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+            <Card title="Data Received" value={result.dataReceived} />
+            <Card title="Data Sent" value={result.dataSent} />
           </div>
 
-          <div className="col-span-2 p-4 bg-gray-100 rounded">
-            <p>
-              <strong>URL:</strong> {result.url}
-            </p>
-            <p>
-              <strong>Method:</strong> {result.method}
-            </p>
-            <p>
-              <strong>VUs:</strong> {result.vus}
-            </p>
-            <p>
-              <strong>Duration:</strong> {result.duration}
-            </p>
+          {/* 🔥 TIMINGS BREAKDOWN */}
+          <div>
+            <h3 className="text-lg font-bold mb-2">Timings Breakdown</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <Card title="Waiting" value={result.waitingTime.toFixed(2)} />
+              <Card title="Sending" value={result.sendingTime.toFixed(2)} />
+              <Card title="Receiving" value={result.receivingTime.toFixed(2)} />
+              <Card title="Blocked" value={result.blockedTime.toFixed(2)} />
+              <Card
+                title="Connecting"
+                value={result.connectingTime.toFixed(2)}
+              />
+              <Card title="TLS" value={result.tlsTime.toFixed(2)} />
+            </div>
           </div>
         </div>
       )}
