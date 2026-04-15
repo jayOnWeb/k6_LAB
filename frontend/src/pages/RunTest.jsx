@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { runTest } from "../services/testService";
+import { getResults } from "../services/testService";
 import Card from "../components/Card";
+import { useEffect } from "react";
 
 const RunTest = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +13,20 @@ const RunTest = () => {
   });
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [history, setHistory] = useState([]);
+
+  useEffect(() => {
+    fetchResults();
+  }, []);
+
+  const fetchResults = async () => {
+    try {
+      const res = await getResults();
+      setHistory(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -31,6 +47,14 @@ const RunTest = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const getHealthColor = (status) => {
+    if (status.includes("Healthy")) return "bg-green-500";
+    if (status.includes("Slow")) return "bg-yellow-500";
+    if (status.includes("Unstable")) return "bg-orange-500";
+    if (status.includes("Critical")) return "bg-red-500";
+    return "bg-gray-500";
   };
 
   return (
@@ -88,10 +112,10 @@ const RunTest = () => {
       {result && (
         <div className="mt-8 space-y-6">
           {/* 🔥 HEALTH STATUS */}
-          <div className="p-4 rounded bg-black text-white">
-            <h2 className="text-xl font-bold">
-              Health Status: {result.healthStatus}
-            </h2>
+          <div
+            className={`p-4 rounded text-white ${getHealthColor(result.healthStatus)}`}
+          >
+            <h2 className="text-xl font-bold">{result.healthStatus}</h2>
           </div>
 
           {/* 🔥 CORE METRICS */}
@@ -137,6 +161,39 @@ const RunTest = () => {
               />
               <Card title="TLS" value={result.tlsTime.toFixed(2)} />
             </div>
+          </div>
+        </div>
+      )}
+      {history.length > 0 && (
+        <div className="mt-10">
+          <h2 className="text-xl font-bold mb-4">Test History</h2>
+
+          <div className="overflow-x-auto">
+            <table className="min-w-full border">
+              <thead className="bg-gray-200">
+                <tr>
+                  <th className="p-2">URL</th>
+                  <th className="p-2">Method</th>
+                  <th className="p-2">Avg</th>
+                  <th className="p-2">P95</th>
+                  <th className="p-2">Fail %</th>
+                  <th className="p-2">Health</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {history.map((item) => (
+                  <tr key={item._id} className="text-center border-t">
+                    <td className="p-2 truncate max-w-[150px]">{item.url}</td>
+                    <td className="p-2">{item.method}</td>
+                    <td className="p-2">{item.avgResponseTime?.toFixed(1)}</td>
+                    <td className="p-2">{item.p95ResponseTime?.toFixed(1)}</td>
+                    <td className="p-2">{item.failureRate?.toFixed(1)}%</td>
+                    <td className="p-2">{item.healthStatus}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
